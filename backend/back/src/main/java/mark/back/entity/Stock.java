@@ -1,6 +1,7 @@
 package mark.back.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,6 +40,7 @@ public class Stock {
     private Date date;
 
     @ManyToMany(mappedBy = "stocksSaved")
+    @JsonIgnore
     private Set<User> saved;
 
 }
