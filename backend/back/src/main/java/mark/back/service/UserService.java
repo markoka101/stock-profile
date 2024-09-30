@@ -6,7 +6,7 @@ public interface UserService {
     //accessing user
     User getUser(Long id);
     User getUser(String username);
-    boolean saveUser(User user);
+    User saveUser(User user);
 
     //save stock
     boolean  saveStock(Long userId, Long stockId);
