@@ -18,6 +18,6 @@ public interface StockService {
     boolean stockExists(String symbol);
 
     //update stock value
-    boolean updateValue(Long id, float value, Date date);
+    Stock updateValue(Long id, float value, Date date);
 
 }
