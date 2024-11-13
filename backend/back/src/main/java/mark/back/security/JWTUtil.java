@@ -3,7 +3,9 @@ package mark.back.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import mark.back.entity.RefreshToken;
 import mark.back.entity.User;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JWTUtil {
@@ -57,5 +60,25 @@ public class JWTUtil {
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstraints.TOKEN_EXPIRATION))
                 .sign(refreshTokenAlgorithm);
+    }
+
+    //decode refresh token
+    private Optional<DecodedJWT> decodeRefresh(String token) {
+        try {
+            return Optional.of(refreshTokenVerifier.verify(token));
+        } catch(JWTVerificationException e) {
+            LOGGER.error("refresh token error",e);
+        }
+        return Optional.empty();
+    }
+
+    //decode access token
+    private Optional<DecodedJWT> decodeAccess(String token) {
+        try {
+            return Optional.of(accessTokenVerifier.verify(token));
+        } catch(JWTVerificationException e) {
+            LOGGER.error("access token error", e);
+        }
+        return Optional.empty();
     }
 }
