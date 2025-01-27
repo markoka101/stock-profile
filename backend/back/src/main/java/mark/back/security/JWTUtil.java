@@ -81,4 +81,22 @@ public class JWTUtil {
         }
         return Optional.empty();
     }
+
+    //validate refresh token
+    public boolean validateRefreshToken (String token) {
+        return decodeRefresh(token).isPresent();
+    }
+    //get refresh token's id
+    public String getTokenIdFromRefreshToken(String token) {
+        return decodeRefresh(token).get().getClaim("tokenId").asString();
+    }
+    //get user's id from refresh token
+    public String getUserIdFromRefreshToken(String token) {
+        String[] sub = decodeRefresh(token).get().getSubject().split(",");
+        return sub[0];
+    }
+    //validate access token
+    public boolean validateAccessToken (String token) {
+        return decodeAccess(token).isPresent();
+    }
 }
