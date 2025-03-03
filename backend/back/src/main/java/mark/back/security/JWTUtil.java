@@ -30,7 +30,7 @@ public class JWTUtil {
         accessTokenAlgorithm = Algorithm.HMAC512(SecurityConstraints.SECRET_KEY);
         refreshTokenAlgorithm = Algorithm.HMAC512(SecurityConstraints.REFRESH_KEY);
 
-        accessTokenVerifier  = JWT.require(accessTokenAlgorithm)
+        accessTokenVerifier = JWT.require(accessTokenAlgorithm)
                 .withIssuer(issuer)
                 .build();
 
@@ -64,8 +64,8 @@ public class JWTUtil {
     private Optional<DecodedJWT> decodeRefresh(String token) {
         try {
             return Optional.of(refreshTokenVerifier.verify(token));
-        } catch(JWTVerificationException e) {
-            LOGGER.error("refresh token error",e);
+        } catch (JWTVerificationException e) {
+            LOGGER.error("refresh token error", e);
         }
         return Optional.empty();
     }
@@ -74,27 +74,36 @@ public class JWTUtil {
     private Optional<DecodedJWT> decodeAccess(String token) {
         try {
             return Optional.of(accessTokenVerifier.verify(token));
-        } catch(JWTVerificationException e) {
+        } catch (JWTVerificationException e) {
             LOGGER.error("access token error", e);
         }
         return Optional.empty();
     }
 
     //validate refresh token
-    public boolean validateRefreshToken (String token) {
+    public boolean validateRefreshToken(String token) {
         return decodeRefresh(token).isPresent();
     }
+
     //get refresh token's id
     public String getTokenIdFromRefreshToken(String token) {
         return decodeRefresh(token).get().getClaim("tokenId").asString();
     }
+
+    //get user if from token
+    public String getUserIdFromToken(String token) {
+        String[] sub = decodeAccess(token).get().getSubject().split(",");
+        return sub[0];
+    }
+
     //get user's id from refresh token
     public String getUserIdFromRefreshToken(String token) {
         String[] sub = decodeRefresh(token).get().getSubject().split(",");
         return sub[0];
     }
+
     //validate access token
-    public boolean validateAccessToken (String token) {
+    public boolean validateAccessToken(String token) {
         return decodeAccess(token).isPresent();
     }
 }
