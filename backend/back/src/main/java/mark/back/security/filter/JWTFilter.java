@@ -36,17 +36,17 @@ public class JWTFilter extends OncePerRequestFilter {
             Optional<String> accessToken = parseAccessToken(request);
             if (accessToken.isPresent() && jwtUtil.validateAccessToken(accessToken.get())) {
                 //grab user from the token
-                User user = userService.getUser(Long.parseLong(jwtUtil.getUserIdFromRefreshToken(accessToken.get())));
+                User user = userService.getUser(Long.parseLong(jwtUtil.getUserIdFromToken(accessToken.get())));
                 //create username and password auth token with user
-                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user,null,user.getAuthorities());
+                UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(token);
             }
         } catch (Exception e) {
-            LOGGER.error("Cannot set authentication",e);
+            LOGGER.error("Cannot set authentication", e);
         }
 
-        filterChain.doFilter(request,response);
+        filterChain.doFilter(request, response);
     }
 
     //parse the access token
