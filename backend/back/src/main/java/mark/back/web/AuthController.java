@@ -6,12 +6,9 @@ import mark.back.entity.RefreshToken;
 import mark.back.entity.User;
 import mark.back.pojo.AuthRequest;
 import mark.back.pojo.AuthResponse;
-import mark.back.repository.RefreshTokenRepository;
 import mark.back.security.JWTUtil;
 import mark.back.service.RefreshTokenService;
 import mark.back.service.UserService;
-import org.postgresql.plugin.AuthenticationRequestType;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,8 +16,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.IllegalTransactionStateException;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -70,6 +65,31 @@ public class AuthController {
         if (jwtUtil.validateRefreshToken(refreshToken) && refreshTokenService.getRefreshToken(jwtUtil.getTokenIdFromRefreshToken(refreshToken)) != null) {
             refreshTokenService.deleteToken(userService.getUser(auth.getId()));
             return ResponseEntity.ok().build();
+        }
+
+        throw new BadCredentialsException("invalid token");
+    }
+
+    //refresh token
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> sendRefreshToken(@RequestBody AuthResponse auth) {
+        String refreshTokenString = auth.getRefreshToken();
+        if (jwtUtil.validateRefreshToken(refreshTokenString) && refreshTokenService.getRefreshToken(jwtUtil.getTokenIdFromRefreshToken(refreshTokenString)) != null) {
+            User user = userService.getUser(auth.getId());
+
+            //this will delete previous refresh token if it already exists
+            refreshTokenService.deleteToken(user);
+            //create refresh token object
+            RefreshToken refreshTokenObj = refreshTokenService.createRefreshToken(user);
+
+            //generate both access and refresh tokens
+            String accessToken = jwtUtil.generateAccessToken(user);
+            String refreshToken = jwtUtil.generateRefreshToken(user, refreshTokenObj);
+
+            auth.setRefreshToken(refreshToken);
+            auth.setAccessToken(accessToken);
+
+            return ResponseEntity.ok(auth);
         }
 
         throw new BadCredentialsException("invalid token");
