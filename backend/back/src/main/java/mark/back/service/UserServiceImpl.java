@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     StockService stockService;
     BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -32,6 +32,18 @@ public class UserServiceImpl implements UserService{
     public User saveUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
+    }
+
+    //check if user exists by id
+    @Override
+    public boolean userExists(Long id) {
+        return userRepository.existsById(id);
+    }
+
+    //check if user exists by username
+    @Override
+    public boolean userExists(String username) {
+        return userRepository.existsByUsername(username);
     }
 
     //save stock to user's saved stock
