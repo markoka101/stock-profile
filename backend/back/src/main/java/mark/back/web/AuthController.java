@@ -33,6 +33,12 @@ public class AuthController {
     //register account
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
+        if (userService.userExists(user.getUsername())) {
+            throw new IllegalArgumentException("username already exists");
+        }
+        if (user.getPassword().length() < 8) {
+            throw new IllegalArgumentException("password must be at least 8 characters long");
+        }
         userService.saveUser(user);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
