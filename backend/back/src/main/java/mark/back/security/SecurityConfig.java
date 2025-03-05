@@ -57,7 +57,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.POST, SecurityConstraints.REGISTER_PATH).permitAll()
                         .requestMatchers(HttpMethod.POST, SecurityConstraints.LOGIN_PATH).permitAll()
-                        //.requestMatchers(HttpMethod.POST, SecurityConstraints.LOGOUT_PATH).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
