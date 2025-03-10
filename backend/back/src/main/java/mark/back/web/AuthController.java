@@ -68,7 +68,10 @@ public class AuthController {
     @PostMapping("/signout")
     public ResponseEntity<?> signOut(@RequestBody AuthResponse auth) {
         String refreshToken = auth.getRefreshToken();
+
+        //check if valid refresh token
         if (jwtUtil.validateRefreshToken(refreshToken) && refreshTokenService.getRefreshToken(jwtUtil.getTokenIdFromRefreshToken(refreshToken)) != null) {
+            //delete token by user
             refreshTokenService.deleteToken(userService.getUser(auth.getId()));
             return ResponseEntity.ok().build();
         }
