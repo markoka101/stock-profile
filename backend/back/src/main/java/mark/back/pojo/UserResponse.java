@@ -14,5 +14,5 @@ public class UserResponse {
 
     private Long id;
     private String username;
-    private Set<StockResponse> stocks;
+    private Set<Stock> stocks;
 }
